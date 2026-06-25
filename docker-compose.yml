@@ -1,0 +1,64 @@
+services:
+  mongodb:
+    image: mongo:8
+    container_name: mongodb-steam
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_steam_data:/data/db
+
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chromadb-steam
+    ports:
+      - "8000:8000"
+    volumes:
+      - chromadb_steam_data:/chroma/chroma
+    environment:
+      - CHROMA_SERVER_AUTHN_CREDENTIALS_FILE=""
+      - ANONYMIZED_TELEMETRY=false
+
+  redis:
+    image: redis:alpine
+    container_name: redis-steam
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_steam_data:/data
+
+  pgsql:
+    image: postgres:15
+    container_name: pgsql-steam
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: TrabajoMongo
+      POSTGRES_USER: sail
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pgsql_steam_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: fastapi-steam
+    ports:
+      - "8080:8080"
+    environment:
+      # Sobrescribimos el .env para que apunte a los contenedores internos de Docker
+      - MONGO_HOST=mongodb
+      - CHROMA_HOST=chromadb
+      - REDIS_HOST=redis
+      - SQLALCHEMY_DATABASE_URL=postgresql://sail:password@pgsql:5432/TrabajoMongo
+    depends_on:
+      - mongodb
+      - chromadb
+      - redis
+      - pgsql
+    volumes:
+      - .:/app  # Esto sincroniza tu código en tiempo real
+
+volumes:
+  mongodb_steam_data:
+  chromadb_steam_data:
+  redis_steam_data:
+  pgsql_steam_data:

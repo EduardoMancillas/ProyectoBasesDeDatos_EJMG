@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steam Juegos - Buscador</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .search-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .import-section {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            align-items: start;
+        }
+
+        .search-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .search-box label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .search-box input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-box button {
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .search-box button:hover {
+            background: #764ba2;
+        }
+
+        .search-box button:active {
+            transform: scale(0.98);
+        }
+
+        .panel {
+            background: linear-gradient(180deg, #ffffff 0%, #f7f8ff 100%);
+            border: 1px solid #e6e8ff;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 8px 24px rgba(73, 88, 196, 0.08);
+        }
+
+        .panel h2 {
+            font-size: 1.05em;
+            margin-bottom: 8px;
+            color: #24315f;
+        }
+
+        .panel p {
+            color: #596180;
+            font-size: 0.95em;
+            line-height: 1.45;
+            margin-bottom: 14px;
+        }
+
+        .import-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .import-grid .full {
+            grid-column: 1 / -1;
+        }
+
+        .hint {
+            font-size: 0.85em;
+            color: #6b7280;
+            margin-top: -4px;
+        }
+
+        .secondary-button {
+            padding: 12px;
+            background: #111827;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        .secondary-button:hover {
+            background: #1f2937;
+        }
+
+        .secondary-button:active {
+            transform: scale(0.98);
+        }
+
+        .summary {
+            margin-top: 14px;
+            padding: 14px;
+            border-radius: 10px;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            color: #374151;
+            display: none;
+        }
+
+        .summary.visible {
+            display: block;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .status.loading {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+
+        .results {
+            margin-top: 30px;
+        }
+
+        .game-card {
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .game-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .game-id {
+            color: #999;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .game-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.95em;
+        }
+
+        .game-info-item {
+            color: #555;
+        }
+
+        .game-info-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .similarity {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #667eea;
+            margin-top: 10px;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #999;
+            padding: 30px;
+            font-size: 1.1em;
+        }
+
+        .health-info {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .search-section {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Steam Juegos</h1>
+            <p class="subtitle">Buscador de juegos con búsqueda semántica</p>
+        </header>
+
+        <div class="status" id="status"></div>
+        <div class="health-info" id="health"></div>
+
+        <div class="search-section">
+            <div class="search-box">
+                <label for="nombre">Buscar por nombre exacto:</label>
+                <input type="text" id="nombre" placeholder="ej: Arma 3, Counter-Strike...">
+                <button onclick="buscarPorNombre()">Buscar por nombre</button>
+            </div>
+
+            <div class="search-box">
+                <label for="semantico">Buscar por similitud:</label>
+                <input type="text" id="semantico" placeholder="ej: shooter militar, juego de carreras...">
+                <button onclick="buscarSemantico()">Buscar semántico</button>
+            </div>
+        </div>
+
+        <div class="import-section">
+            <div class="panel">
+                <h2>Importar biblioteca de Steam</h2>
+                <p>Trae juegos desde tu cuenta de Steam y guárdalos en MongoDB y ChromaDB con su <strong>steamID</strong>. Si dejas vacía la API key, el servidor usará la variable <strong>STEAMWORKS_API_KEY</strong> si ya la configuraste.</p>
+
+                <div class="import-grid">
+                    <div class="search-box full">
+                        <label for="steam_id">SteamID:</label>
+                        <input type="text" id="steam_id" placeholder="ej: 76561199175566163">
+                    </div>
+
+                    <div class="search-box">
+                        <label for="steam_api_key">API key de Steam:</label>
+                        <input type="password" id="steam_api_key" placeholder="Opcional si ya está en el servidor">
+                        <div class="hint">Puedes pegarla aquí o dejar este campo vacío.</div>
+                    </div>
+
+                    <div class="search-box">
+                        <label for="steam_limite">Límite de juegos:</label>
+                        <input type="number" id="steam_limite" min="1" max="500" value="100">
+                        <div class="hint">Cantidad máxima a importar por request.</div>
+                    </div>
+
+                    <div class="search-box full">
+                        <button class="secondary-button" onclick="importarSteamBiblioteca()">Importar desde Steam</button>
+                    </div>
+                </div>
+
+                <div class="summary" id="importSummary"></div>
+            </div>
+
+            <div class="panel">
+                <h2>Qué hace la importación</h2>
+                <p>El servidor consulta tus juegos con la API oficial de Steam, descarga los detalles de cada app, los transforma al formato del proyecto y los indexa para búsqueda por nombre y similitud.</p>
+                <p>Si un juego ya existe por <strong>id</strong>, se omite para evitar duplicados.</p>
+            </div>
+        </div>
+
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080';
+
+        function mostrarStatus(mensaje, tipo) {
+            const status = document.getElementById('status');
+            status.textContent = mensaje;
+            status.className = 'status ' + tipo;
+        }
+
+        function limpiarResultados() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function checkHealth() {
+            try {
+                const resp = await fetch(`${API_URL}/api/health`);
+                const data = await resp.json();
+                
+                const healthDiv = document.getElementById('health');
+                healthDiv.innerHTML = `
+                    <strong>API Conectada</strong><br>
+                    MongoDB: ${data.mongo.collection} (${data.total_mongo} juegos)<br>
+                    ChromaDB: ${data.chroma.count} documentos indexados
+                `;
+            } catch (e) {
+                document.getElementById('health').innerHTML = `<strong>API No disponible</strong><br>Asegúrate de ejecutar: <code>python Api.py</code>`;
+            }
+        }
+
+        async function buscarPorNombre() {
+            const nombre = document.getElementById('nombre').value.trim();
+            if (!nombre) {
+                mostrarStatus('Escribe un nombre para buscar', 'error');
+                return;
+            }
+
+            limpiarResultados();
+            mostrarStatus('Buscando...', 'loading');
+
+            try {
+                const resp = await fetch(`${API_URL}/api/juegos?nombre=${encodeURIComponent(nombre)}`);
+                const data = await resp.json();
+
+                if (data.count === 0) {
+                    mostrarStatus(`No se encontraron juegos con "${nombre}"`, 'error');
+                    document.getElementById('results').innerHTML = `<div class="no-results">Sin resultados</div>`;
+                    return;
+                }
+
+                mostrarStatus(`Se encontraron ${data.count} juego(s)`, 'success');
+                mostrarResultados(data.results, 'nombre');
+            } catch (e) {
+                mostrarStatus('Error: ' + e.message, 'error');
+            }
+        }
+
+        async function buscarSemantico() {
+            const query = document.getElementById('semantico').value.trim();
+            if (!query) {
+                mostrarStatus('Describe qué tipo de juego buscas', 'error');
+                return;
+            }
+
+            limpiarResultados();
+            mostrarStatus('✨ Buscando por similitud...', 'loading');
+
+            try {
+                const resp = await fetch(`${API_URL}/api/buscar/semantico?q=${encodeURIComponent(query)}`);
+                const data = await resp.json();
+
+                if (data.count === 0) {
+                    mostrarStatus('No se encontraron resultados similares', 'error');
+                    document.getElementById('results').innerHTML = `<div class="no-results">Sin resultados</div>`;
+                    return;
+                }
+
+                mostrarStatus(`Top ${data.count} resultados más similares`, 'success');
+                mostrarResultados(data.results, 'semantico');
+            } catch (e) {
+                mostrarStatus('Error: ' + e.message, 'error');
+            }
+        }
+
+        async function importarSteamBiblioteca() {
+            const steamId = document.getElementById('steam_id').value.trim();
+            const apiKey = document.getElementById('steam_api_key').value.trim();
+            const limite = parseInt(document.getElementById('steam_limite').value, 10) || 100;
+
+            if (!steamId) {
+                mostrarStatus('Escribe tu SteamID para importar la biblioteca', 'error');
+                return;
+            }
+
+            document.getElementById('importSummary').className = 'summary';
+            document.getElementById('importSummary').innerHTML = '';
+            mostrarStatus('Importando juegos desde Steam...', 'loading');
+
+            try {
+                const resp = await fetch(`${API_URL}/api/juegos/steam/importar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        steam_id: steamId,
+                        api_key: apiKey || undefined,
+                        limite: limite
+                    })
+                });
+
+                const data = await resp.json();
+
+                if (!resp.ok) {
+                    const mensaje = data.error || 'No se pudo importar la biblioteca';
+                    mostrarStatus(mensaje, 'error');
+                    return;
+                }
+
+                mostrarStatus(`Importación completada: ${data.importados} juegos importados`, 'success');
+                document.getElementById('importSummary').className = 'summary visible';
+                document.getElementById('importSummary').innerHTML = `
+                    <strong>Resultado de importación</strong><br>
+                    SteamID: ${data.steam_id}<br>
+                    Encontrados: ${data.total_encontrados}<br>
+                    Importados: ${data.importados}<br>
+                    Saltados: ${data.saltados}<br>
+                    ${data.errores && data.errores.length ? `Errores: ${data.errores.length}` : 'Sin errores'}
+                `;
+            } catch (e) {
+                mostrarStatus('Error: ' + e.message, 'error');
+            }
+        }
+
+        function mostrarResultados(juegos, tipo) {
+            const html = juegos.map((j, i) => `
+                <div class="game-card">
+                    <div class="game-title">${i + 1}. ${j.nombre}</div>
+                    <div class="game-id">ID: ${j.id}</div>
+                    <div class="game-info">
+                        <div class="game-info-item">
+                            <span class="game-info-label">Géneros:</span> ${j.generos || 'N/A'}
+                        </div>
+                        <div class="game-info-item">
+                            <span class="game-info-label">Tags:</span> ${j.tags || 'N/A'}
+                        </div>
+                    </div>
+                    ${tipo === 'semantico' ? `<div class="similarity">Similitud: ${j.similitud}%</div>` : ''}
+                </div>
+            `).join('');
+
+            document.getElementById('results').innerHTML = html;
+        }
+
+        // Verificar salud al cargar
+        checkHealth();
+        setInterval(checkHealth, 10000);
+
+        // Permitir Enter para buscar
+        document.getElementById('nombre').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') buscarPorNombre();
+        });
+        document.getElementById('semantico').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') buscarSemantico();
+        });
+        document.getElementById('steam_id').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') importarSteamBiblioteca();
+        });
+    </script>
+</body>
+</html>

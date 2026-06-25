@@ -1,0 +1,20 @@
+# Entornos virtuales
+venv/
+env/
+
+# Variables de entorno (¡Nunca se suben por seguridad!)
+.env
+
+# Caché de Python
+__pycache__/
+*.pyc
+
+# Archivos pesados JSON
+biblioteca_steam/
+todos_los_juegos.json
+
+# Datos locales de las Bases de Datos
+mongodb_steam_data/
+chromadb_steam_data/
+redis_steam_data/
+pgsql_steam_data/

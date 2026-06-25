@@ -1,0 +1,17 @@
+# Ignorar el entorno virtual
+venv/
+env/
+
+# Ignorar cachés de Python
+__pycache__/
+*.pyc
+
+# Ignorar los archivos JSON pesados (ya están en la base de datos)
+biblioteca_steam/
+todos_los_juegos.json
+
+# Ignorar carpetas de bases de datos locales (si las hubiera)
+mongodb_steam_data/
+chromadb_steam_data/
+redis_steam_data/
+pgsql_steam_data/

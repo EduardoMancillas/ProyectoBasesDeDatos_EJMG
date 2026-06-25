@@ -2,7 +2,7 @@
 
 Este proyecto es una API RESTful desarrollada con **FastAPI**, diseñada para gestionar un catálogo de juegos y sesiones de usuarios simulando el entorno de GeForce Now. Implementa una arquitectura multicontenedor robusta utilizando **Docker** y múltiples motores de bases de datos para separar responsabilidades y optimizar el rendimiento.
 
-## 🚀 Características Principales
+## Características Principales
 
 El proyecto cumple con los siguientes requerimientos técnicos:
 
@@ -13,7 +13,7 @@ El proyecto cumple con los siguientes requerimientos técnicos:
 * **Documentación Interactiva:** Todos los endpoints están documentados y son probables mediante **Swagger UI**.
 * **Infraestructura Contenerizada:** Todo el ecosistema (API + 4 bases de datos) se levanta y orquesta mediante **Docker Compose**.
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 * **Backend:** Python 3.10, FastAPI, Uvicorn, Pydantic.
 * **Bases de Datos:**
@@ -23,7 +23,7 @@ El proyecto cumple con los siguientes requerimientos técnicos:
   * **Redis:** Sistema de caché en memoria.
 * **Despliegue:** Docker, Docker Compose.
 
-## ⚙️ Instalación y Configuración
+## Instalación y Configuración
 
 ### Prerrequisitos
 * [Docker](https://www.docker.com/) y Docker Compose instalados en tu sistema.
